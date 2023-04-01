@@ -32,3 +32,9 @@ show_forest(STAD_clinial,
             covariates = c("SEX","AGE","AJCC_PATHOLOGIC_TUMOR_STAGE"),
             time = "OS_MONTHS",
             status = "OS_STATUS")
+
+# # 多因素cox分析，绘制森林图
+# 拟合生存分析模型
+surv_model <- coxph(Surv(time, status) ~ age + gender + ph.ecog, data = mydata1)
+# 制作森林图
+forest_model(surv_model)
