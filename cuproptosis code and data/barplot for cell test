@@ -1,0 +1,27 @@
+rt<-read.csv('clipboard',sep = '\t')
+rt<-rt[-1,]
+library(dplyr)
+rt1<-gather(data=rt,key=type,value=OD,-group)
+data_summary <- function(data, varname, groupnames){
+      require(plyr)
+    summary_func <- function(x, col){
+            c(mean = mean(x[[col]], na.rm=TRUE),
+                     sd = sd(x[[col]], na.rm=TRUE))
+       }
+     data_sum<-ddply(data, groupnames, .fun=summary_func,
+                        +                     varname)
+    data_sum <- rename(data_sum, c("mean" = varname))
+      return(data_sum)
+    df3 <- data_summary(rt1, varname="OD", 
+             groupnames=c("group", "type"))
+    df3$type=as.factor(df3$type)
+    head(df3)
+    
+    p <- ggplot(df3,  aes(x=group, y=OD, fill=type)) + 
+     geom_bar(stat="identity", position=position_dodge()) +
+        geom_errorbar(aes(ymin=len-sd, ymax=len+sd), width=.2,
+               position=position_dodge(.9))
+
+      p + scale_fill_brewer(palette="Paired") +
+        theme_classic()+ labs(title="CCK8 Experimental 48h",
+                              x="Group", y="OD Value")
